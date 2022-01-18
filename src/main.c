@@ -1,13 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stdio.h>
 
 #include "core.h"
 #include "data.h"
 #include "shaders.h"
 #include "input/input.h"
 #include "framebuffer_size/framebuffer_size.h"
-#include "shaders/linker.h"
 
 int main(){
 
