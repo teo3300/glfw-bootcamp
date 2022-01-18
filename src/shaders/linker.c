@@ -19,7 +19,7 @@ int shaderProgramLink(unsigned int program){
     return program;
 }
 
-unsigned int shaderCompileProgramFull(char* vertexPath, char* fragmentPath, char* geometryPath){
+unsigned int shaderCompileProgramFull(char* vertexPath, char* geometryPath, char* fragmentPath){
 
     requires(vertexPath || fragmentPath || geometryPath,
         "Provide at least one shader for program");

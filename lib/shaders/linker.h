@@ -3,6 +3,6 @@
 int shaderLink(unsigned int program);
 
 #define shaderCompileProgram(vertexPath, fragmentPath)\
-    shaderCompileProgramFull(vertexPath, fragmentPath, (void*)NULL)
+    shaderCompileProgramFull(vertexPath, NULL, fragmentPath)
 
-unsigned int shaderCompileProgramFull(char* vertexPath, char* fragmentPath, char* geometryPath);
+unsigned int shaderCompileProgramFull(char* vertexPath, char* geometryPath, char* fragmentPath);
