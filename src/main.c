@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "core.h"
+#include "core/log.h"
 #include "data.h"
 #include "shaders.h"
 #include "input/input.h"
@@ -41,14 +42,23 @@ int main(){
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);                                       // set default clear color
 
-    glGenVertexArrays(1, &VAO);                                                 // generate array buffer
+    glGenVertexArrays(1, &VAO);                                                 // generate vertex array object
     glGenBuffers(1, &VBO);                                                      // generate new buffer (return addr)
+    glGenBuffers(1, &EBO);
 
-    glBindVertexArray(VAO);                                                     // bind Vertex Array
+    glBindVertexArray(VAO);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);                                         // bind buffer for Vertex Objects
-    glBufferData(GL_ARRAY_BUFFER, 9*sizeof(float), vertices, GL_STATIC_DRAW);   // copy data to buffer
+    glBufferData(GL_ARRAY_BUFFER,
+        12*sizeof(float), polygone_vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(                                                      // 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+        6*sizeof(unsigned int), polygone_indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(
         0,                                                                      // VA to configure (location = 0 in shader)
         3,                                                                      // size of VA (vec3)
         GL_FLOAT,                                                               // VA type is vec* (floats)
@@ -59,6 +69,7 @@ int main(){
 
     unsigned int shaderProgram =
         shaderCompileProgram("shaders/main.vert", "shaders/main.frag");
+    if(!shaderProgram)  log_error("Failed to compile shader program");
 
     glUseProgram(shaderProgram);                                                // set shader to use
 
@@ -67,7 +78,8 @@ int main(){
         processInput(window);
 
         glClear(GL_COLOR_BUFFER_BIT);                                           // clear buffer (to avoid ghosting)
-        glDrawArrays(GL_TRIANGLES, 0, 3);                                       // draw triangle on buffer
+        //glDrawArrays(GL_TRIANGLES, 0, 3);                                     // draw vertices on buffer (INSTEAD USE \/ )
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);                    // draw indeces of the bound vertex array buffer
         
         glfwPollEvents();                                                       // input poll
         glfwSwapBuffers(window);                                                // double framebuffer
