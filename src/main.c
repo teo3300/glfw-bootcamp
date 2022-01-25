@@ -2,8 +2,8 @@
 #include <GLFW/glfw3.h>
 
 #include "core.h"
-#include "core/log.h"
 #include "data.h"
+#include "glfw_aggregator/aggregator.h"
 #include "shaders.h"
 #include "input/input.h"
 #include "framebuffer_size/framebuffer_size.h"
@@ -48,7 +48,7 @@ int main(){
 
     glBindVertexArray(VAO);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_POLYGON);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);                                         // bind buffer for Vertex Objects
     glBufferData(GL_ARRAY_BUFFER,
@@ -71,7 +71,13 @@ int main(){
         shaderCompileProgram("shaders/main.vert", "shaders/main.frag");
     if(!shaderProgram)  log_error("Failed to compile shader program");
 
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "outColor");  // locate uniform variables
+
     glUseProgram(shaderProgram);                                                // set shader to use
+
+    glUniform4f(vertexColorLocation, glfwRand(), glfwRand(), glfwRand(), glfwRand());
+
+    glDebugMaxVertexAttribs();
 
     //  main loop
     while(!glfwWindowShouldClose(window)){  
@@ -85,6 +91,12 @@ int main(){
         glfwSwapBuffers(window);                                                // double framebuffer
     }
     glfwTerminate();                                                            // free resources
+
+    glDeleteBuffers(1, &EBO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+
+    glDeleteProgram(shaderProgram);
 
     log_log("Execution ended");
     return 0;

@@ -1,9 +1,9 @@
 target	:= main
 
 CC			:= gcc
-CFLAG		:= -O2 -Wall -Werror -m64
+CFLAG		:= -O2 -Wall -Werror -m64 -g
 DEFINES		:= LOG_LEVEL=LOG_LEVEL_DEBUG
-LIBRARIES	:= pthread GL glfw dl
+LIBRARIES	:= pthread GL glfw dl m
 PKG 		:= 
 
 SRC := src
@@ -12,6 +12,8 @@ OBJ := obj
 BLD := build
 
 MAKEFLAGS += --no-print-directory
+
+TESTFLAGS = --leak-check=yes
 
 #------------------------------------------------------------------------------#
 
@@ -74,3 +76,9 @@ $(target): $(DEPS:.d=.o)
 
 $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -o $@ -c $< $(CFLAG) $(DEPFLAG_O)
+
+#------------------------------------------------------------------------------#
+
+#	testing
+test:
+	valgrind $(TESTFLAGS) ./build/main
