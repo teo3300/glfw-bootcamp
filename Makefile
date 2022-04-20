@@ -1,7 +1,7 @@
 target	:= main
 
 CC			:= gcc
-CFLAG		:= -O2 -Wall -Werror -m64 -g
+CFLAG		:= -O2 -Wall -Werror -g # -m64
 DEFINES		:= LOG_LEVEL=LOG_LEVEL_DEBUG
 LIBRARIES	:= pthread GL glfw dl m
 PKG 		:= 
@@ -10,6 +10,8 @@ SRC := src
 LIB := lib
 OBJ := obj
 BLD := build
+
+DEFDEPS := Makefile
 
 MAKEFLAGS += --no-print-directory
 
@@ -29,7 +31,7 @@ CFLAG +=-I$(LIB) $(LIBRARIES:%=-l%) $(DEFINES:%=-D%)
 
 #	set default target
 target := $(BLD)/$(target)
-default: $(target)
+default: project
 
 #------------------------------------------------------------------------------#
 
@@ -55,13 +57,16 @@ project:
 	@make struct	$(MAKEFLAGS)
 	@echo -n "compiling..."
 	@make objects	$(MAKEFLAGS)
-	@make default	$(MAKEFLAGS) > /dev/null
+	@make $(target)	$(MAKEFLAGS) > /dev/null
 	@echo DONE
 
 clean:
 	@rm -rf $(OBJ)
 	@rm -rf $(BLD)
-
+	
+rebuild:
+	@make clean 	$(MAKEFLAGS)
+	@make project	$(MAKEFLAGS)
 #------------------------------------------------------------------------------#
 
 #	generate dependencies alongside objects
@@ -71,11 +76,11 @@ DEPFLAG_O = -MMD -MF $(@:.o=.d) -MT $@
 #------------------------------------------------------------------------------#
 
 #	build target with all objects
-$(target): $(DEPS:.d=.o)
-	$(CC) -o $@ $^ $(CFLAG)
+$(target): $(DEPS:.d=.o) $(DEFDEPS)
+	$(CC) -o $@ $(filter-out $(DEFDEPS), $^) $(CFLAG)
 
-$(OBJ)/%.o: $(SRC)/%.c
-	$(CC) -o $@ -c $< $(CFLAG) $(DEPFLAG_O)
+$(OBJ)/%.o: $(SRC)/%.c $(DEFDEPS)
+	$(CC) -o $@ -c $(filter-out $(DEFDEPS), $<) $(CFLAG) $(DEPFLAG_O)
 
 #------------------------------------------------------------------------------#
 
