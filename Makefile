@@ -7,7 +7,6 @@ LIBRARIES	:= pthread GL glfw dl m
 PKG 		:= 
 
 SRC := src
-LIB := lib
 OBJ := obj
 BLD := build
 
@@ -25,7 +24,7 @@ TESTFLAGS = --leak-check=yes
 #	include packages
 #CFLAG += $(shell pkg-config --cflags --libs $(PKG))
 #	include libraries
-CFLAG +=-I$(LIB) $(LIBRARIES:%=-l%) $(DEFINES:%=-D%)
+CFLAG +=-I$(SRC) $(LIBRARIES:%=-l%) $(DEFINES:%=-D%)
 
 #------------------------------------------------------------------------------#
 
@@ -35,7 +34,7 @@ default: project
 
 #------------------------------------------------------------------------------#
 
-BASE	:= $(SRC) $(LIB) $(OBJ) $(BLD)
+BASE	:= $(SRC) $(OBJ) $(BLD)
 OBJECTS := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(shell find $(SRC) -name "*.c"))
 STRUCT	:= $(sort $(dir $(OBJECTS)))
 
