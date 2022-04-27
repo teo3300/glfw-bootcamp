@@ -36,36 +36,41 @@ default: project
 
 BASE	:= $(SRC) $(OBJ) $(BLD)
 OBJECTS := $(patsubst $(SRC)/%.c,$(OBJ)/%.o,$(shell find $(SRC) -name "*.c"))
+OBJECTS := $(if $(OBJECTS),$(OBJECTS),_do_nothing)
 STRUCT	:= $(sort $(dir $(OBJECTS)))
 
 base:
-	@echo -n "making project base folders..."
+	@echo "> making project base folders..."
 	@mkdir $(BASE) 2> /dev/null || :
-	@echo DONE
 
 struct:
-	@echo -n "replicating project structure..."
+	@echo "> replicating project structure..."
 	@mkdir $(STRUCT) 2> /dev/null || :
-	@echo DONE
 
 objects:
-	@make $(OBJECTS) $(MAKEFLAGS) > /dev/null
+	@echo "> making objects..."
+	@make $(OBJECTS) $(MAKEFLAGS)
 
 project:
+	@echo "> making structure..."
 	@make base		$(MAKEFLAGS)
 	@make struct	$(MAKEFLAGS)
-	@echo -n "compiling..."
-	@make objects	$(MAKEFLAGS)
+	@echo "> compiling..."
+	@make objects	$(MAKEFLAGS) > /dev/null
 	@make $(target)	$(MAKEFLAGS) > /dev/null
-	@echo DONE
 
 clean:
+	@echo "> cleaning project..."
 	@rm -rf $(OBJ)
 	@rm -rf $(BLD)
 	
 rebuild:
+	@echo "> rebuilding project..."
 	@make clean 	$(MAKEFLAGS)
 	@make project	$(MAKEFLAGS)
+
+_do_nothing:
+	@true
 #------------------------------------------------------------------------------#
 
 #	generate dependencies alongside objects
@@ -76,9 +81,11 @@ DEPFLAG_O = -MMD -MF $(@:.o=.d) -MT $@
 
 #	build target with all objects
 $(target): $(DEPS:.d=.o) $(DEFDEPS)
+	@echo "building target: $@"
 	$(CC) -o $@ $(filter-out $(DEFDEPS), $^) $(CFLAG)
 
 $(OBJ)/%.o: $(SRC)/%.c $(DEFDEPS)
+	@echo "building object: $@"
 	$(CC) -o $@ -c $(filter-out $(DEFDEPS), $<) $(CFLAG) $(DEPFLAG_O)
 
 #------------------------------------------------------------------------------#

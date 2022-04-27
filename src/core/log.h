@@ -1,6 +1,8 @@
 #pragma once
 #include <stdio.h>
 
+// refer to https://www.keil.com/support/man/docs/armcc/armcc_chr1359124965789.htm
+
 #define NOTHING {}
 
 #define LOG_LEVEL_ERROR     0
