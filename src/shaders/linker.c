@@ -5,23 +5,23 @@
 extern char compilation_log[INFO_LOG_BUFF_SIZE];
 
 int shaderProgramLink(unsigned int program){
-    debug("compiling program");
+    debug("compiling...");
     glLinkProgram(program);    
     int success;
 
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if(!success){
         glGetProgramInfoLog(program, INFO_LOG_BUFF_SIZE, NULL, compilation_log);
-        error("%s", compilation_log);
+        error("%s\tError linking programs", compilation_log);
         return 0;
     }
-    debug("shader program successfully linked");
+    debug("compilation successful");
     return program;
 }
 
 unsigned int shaderCompileProgramFull(char* vertexPath, char* geometryPath, char* fragmentPath){
 
-    requires(vertexPath || fragmentPath || geometryPath,
+    lib_requires(vertexPath || fragmentPath || geometryPath,
         "Provide at least one shader for program");
 
     unsigned int shaderProgram = 0;
@@ -29,26 +29,26 @@ unsigned int shaderCompileProgramFull(char* vertexPath, char* geometryPath, char
         fragmentShader = 0,
         geometryShader = 0;
 
-    requires(shaderProgram = glCreateProgram(),
+    lib_requires(shaderProgram = glCreateProgram(), 
         "Could not create shader program");
 
     if(vertexPath){
-        requires(vertexShader = shaderLoadAndCompile(vertexPath, GL_VERTEX_SHADER),
-            "%s", vertexPath);
+        lib_requires(vertexShader = shaderLoadAndCompile(vertexPath, GL_VERTEX_SHADER),
+            "failed to compile vertex shader '%s'", vertexPath);
         glAttachShader(shaderProgram, vertexShader);
-    }
+    }else debug("missing vertex shader");
     if(fragmentPath){
-        requires(fragmentShader = shaderLoadAndCompile(fragmentPath, GL_FRAGMENT_SHADER),
-            "%s", fragmentPath);
+        lib_requires(fragmentShader = shaderLoadAndCompile(fragmentPath, GL_FRAGMENT_SHADER),
+            "failed to compile fragment shader '%s'", fragmentPath);
         glAttachShader(shaderProgram, fragmentShader);
-    }
+    }else debug("missing fragment shader");
     if(geometryPath){
-        requires(geometryShader = shaderLoadAndCompile(geometryPath, GL_GEOMETRY_SHADER),
-            "%s", geometryPath);
+        lib_requires(geometryShader = shaderLoadAndCompile(geometryPath, GL_GEOMETRY_SHADER),
+            "failed to compile geometry shader '%s'", geometryPath);
         glAttachShader(shaderProgram, geometryShader);
-    }
+    }else debug("missing geometry shader");
 
-    requires(shaderProgramLink(shaderProgram),
+    lib_requires(shaderProgramLink(shaderProgram),
         "Could not link shader programs");
 
     if(vertexShader)glDeleteShader(vertexShader);

@@ -7,34 +7,27 @@
 #include "shaders.h"
 #include "input/input.h"
 #include "framebuffer_size/framebuffer_size.h"
+#include "shaders/linker.h"
 
 int main(){
 
     GLFWwindow* window;
 
     //  initializing GLFW
-    if(!glfwInit()){                                                            // well... init
-        error("Failed to initialize GLFW");
-        return -1;
-    }
+    requires(glfwInit(), "Failed to initialize GLFW");
     glfwRequired(4, 3, GLFW_OPENGL_CORE_PROFILE);
 
     //  creating window
     window = glfwCreateWindow(800, 600, "OpenGL test", NULL, NULL);             // new window
-    if (!window){                                                               // exit with error if window init failed
-        error("Failed to create GLFW window");
-        glfwTerminate();
-        return -1;
-    }
+    requires(window,
+        "Failed to create GLFW window");
     glfwMakeContextCurrent(window);                                             // OpenGL context on current window
-    log("Window successfully created");
+    log("Created GLFW window");
 
     //  initializing GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){                   // try loading GL functions
-        error("Failed to initialize GLAD");
-        return -1;
-    }
-    log("GLAD successfully initialized");
+    requires(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress),
+        "Failed to initialize GLAD");
+    log("Initialized GLAD");
 
     //  setting GL viewport
     glViewport(0, 0, 800, 600);                                                 // setting initial GL viewport
@@ -67,9 +60,10 @@ int main(){
         (void*)0);                                                              // offset of data begin
     glEnableVertexAttribArray(0);                                               // set to use vertexAttrib 0
 
-    unsigned int shaderProgram =
-        shaderCompileProgram("shaders/main.vert", "shaders/main.frag");
-    if(!shaderProgram)  error("Failed to compile shader program");
+    unsigned int shaderProgram;
+    requires(shaderProgram =
+        shaderCompileProgram("shaders/main.vert", "shaders/main.frag"),
+        "Failed to compile shader program");
 
     int vertexColorLocation = glGetUniformLocation(shaderProgram, "outColor");  // locate uniform variables
 

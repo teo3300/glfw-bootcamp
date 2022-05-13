@@ -2,7 +2,7 @@ target	:= main
 
 CC			:= gcc
 CFLAG		:= -O2 -Wall -Werror -g -m64
-DEFINES		:= DLEVEL=LEVEL_DEBUG
+DEFINES		:= DLEVEL=LEVEL_LOG
 LIBRARIES	:= pthread GL glfw dl m
 PKG 		:= 
 

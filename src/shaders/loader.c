@@ -14,7 +14,7 @@ static inline int shaderCompilationSuccess(GLuint shader){
 }
 
 int shaderLoadAndCompile(char* shader_file, GLenum shader_type){
-    debug("%s", shader_file);
+    debug("loading %s ...", shader_file);
 
     int shader;
 
@@ -23,8 +23,8 @@ int shaderLoadAndCompile(char* shader_file, GLenum shader_type){
     shader = glCreateShader(shader_type);                                       // create new shader
 
     FILE* fptr = fopen(shader_file, "rb");                                      // open shader file
-    requires(fptr,
-        "Could not load shader file");
+    lib_requires(fptr,
+        "Could not open shader file \"%s\"", shader_file);
 
     fseek(fptr, 0, SEEK_END);
     long fsize = ftell(fptr);                                                   // get file length
@@ -32,19 +32,19 @@ int shaderLoadAndCompile(char* shader_file, GLenum shader_type){
 
     char* source_buffer = (char*)malloc(fsize+1);                               // prepare buffer
     *(source_buffer+fsize) = '\0';                                              // only place null_char at end of line
-    requires(source_buffer,
-        "Could not reserve memory for shader compilation");
+    lib_requires(source_buffer,
+        "Could not reserve memory to compile '%s'", shader_file);
 
     requires(fsize == fread(source_buffer, 1, fsize, fptr),                     // read file
-        "Could not read shader file");
+        "Could not read shader file '%s'", shader_file);
 
     glShaderSource(shader, 1, (const GLchar**)  &source_buffer, NULL);          // load source
     glCompileShader(shader);
 
     free(source_buffer);                                                        // release memory
 
-    requires(shaderCompilationSuccess(shader),                                  // output errors
+    lib_requires(shaderCompilationSuccess(shader),                                  // output errors
         "%s\twhile compiling %s", compilation_log, shader_file);
-    debug("shader successfully loaded");
+    log("'%s' compiled", shader_file);
     return shader;
 }
