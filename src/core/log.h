@@ -3,50 +3,45 @@
 
 // refer to https://www.keil.com/support/man/docs/armcc/armcc_chr1359124965789.htm
 
-#define NOTHING {}
+#define NOTHING do{}while(0)
 
-#define LOG_LEVEL_ERROR     0
-#define log_level_error     LOG_LEVEL >= LOG_LEVEL_ERROR
-#define LOG_LEVEL_WARNING   1
-#define log_level_warning   LOG_LEVEL >= LOG_LEVEL_WARNING
-#define LOG_LEVEL_LOG       2
-#define log_level_log       LOG_LEVEL >= LOG_LEVEL_LOG
-#define LOG_LEVEL_DEBUG     3
-#define log_level_debug     LOG_LEVEL >= LOG_LEVEL_DEBUG
+#define LEVEL_ERROR     0
+#define LEVEL_WARNING   1
+#define LEVEL_LOG       2
+#define LEVEL_DEBUG     3
 
-#define flog(stream, prefix, message)\
-    fprintf(stream, "%s:\t%s\n", prefix, message)
-
-#define fvarlog(stream, prefix, message, value)\
-    fprintf(stream, "%s:\t(%p) %s\n", prefix, (void*) value, message)
-
-#define log_error(message) flog(stderr, " ERROR", message)
-#define log_error_var(message, value) fvarlog(stderr, "-ERROR:", message, value)
-
-#if log_level_warning
-    #define log_warning(message)  flog(stderr, " WARNING", message)
-    #define log_warning_var(message, value) fvarlog(stderr, "-WARNING:", message, value)
-#else
-    #define log_warning(message) NOTHING
-    #define log_warning_var(message, value) NOTHING
+#ifndef DLEVEL
+    #define DLEVEL LEVEL_ERROR
 #endif
 
-#if log_level_log
-    #define log_log(message)  flog(stderr, " LOG", message)
-    #define log_log_var(message, value) fvarlog(stderr, "-LOG:", message, value)
-#else
-    #define log_log(message) NOTHING
-    #define log_log_var(message, value) NOTHING
+#if DLEVEL < LEVEL_ERROR
+    #error Please specify a valid debug level (LEVEL_ERROR, LEVEL_WARNING, LEVEL_LOG, LEVEL_DEBUG) or a positive integer
 #endif
 
-#if log_level_debug
-    #define log_debug(message)  flog(stderr, " DEBUG", message)
-    #define log_debug_var(message, value) fvarlog(stderr, "-DEBUG", message, value)
+#define PRINT(__prefix, __format, ...) fprintf(stderr, "["__prefix"]: "__FILE__":%d > "__format"\n", __LINE__, ##__VA_ARGS__)
+
+#if DLEVEL >= LEVEL_ERROR
+    #define error(__format, ...) PRINT(" ERROR ", __format, ##__VA_ARGS__)
 #else
-    #define log_debug(message) NOTHING
-    #define log_debug_var(message, value) NOTHING
+    #define error(__format, ...) NOTHING
 #endif
 
-#define requires(value, message) if(!(value)){log_error(message); return 0;}
+#if DLEVEL >= LEVEL_WARNING
+    #define warning(__format, ...) PRINT("WARNING", __format, ##__VA_ARGS__)
+#else
+    #define warning(__format, ...) NOTHING
+#endif
 
-#define litteral(str)    char* str = #str
+#if DLEVEL >= LEVEL_LOG
+    #define log(__format, ...) PRINT("  LOG  ", __format, ##__VA_ARGS__)
+#else
+    #define log(__format, ...) NOTHING
+#endif
+
+#if DLEVEL >= LEVEL_DEBUG
+    #define debug(__format, ...) PRINT(" DEBUG ", __format, ##__VA_ARGS__)
+#else
+    #define debug(__format, ...) NOTHING
+#endif
+
+#define requires(val, __format, ...) do{ if(!(val)){ error(__format, ##__VA_ARGS__); return 0; } }while(0)

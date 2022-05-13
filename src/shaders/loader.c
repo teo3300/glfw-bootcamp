@@ -14,7 +14,7 @@ static inline int shaderCompilationSuccess(GLuint shader){
 }
 
 int shaderLoadAndCompile(char* shader_file, GLenum shader_type){
-    log_debug(shader_file);
+    debug("%s", shader_file);
 
     int shader;
 
@@ -44,7 +44,7 @@ int shaderLoadAndCompile(char* shader_file, GLenum shader_type){
     free(source_buffer);                                                        // release memory
 
     requires(shaderCompilationSuccess(shader),                                  // output errors
-        compilation_log);
-    log_debug("shader successfully loaded");
+        "%s\twhile compiling %s", compilation_log, shader_file);
+    debug("shader successfully loaded");
     return shader;
 }

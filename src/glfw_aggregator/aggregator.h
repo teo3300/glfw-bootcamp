@@ -7,7 +7,7 @@ void glfwRequired(int versionMajor, int versionMinor, int profile);
     {\
     int nrAttributes;\
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);\
-    fprintf(stderr, " DEBUG:\tMaximum # of vertex attributes supported: %d\n", nrAttributes);\
+    debug("Maximum # of vertex attributes supported: %d", nrAttributes);\
     }
 #else
     #define glDebugMaxVertexAttribs() 

@@ -5,17 +5,17 @@
 extern char compilation_log[INFO_LOG_BUFF_SIZE];
 
 int shaderProgramLink(unsigned int program){
-    log_debug("compiling program");
+    debug("compiling program");
     glLinkProgram(program);    
     int success;
 
     glGetProgramiv(program, GL_LINK_STATUS, &success);
     if(!success){
         glGetProgramInfoLog(program, INFO_LOG_BUFF_SIZE, NULL, compilation_log);
-        log_error(compilation_log);
+        error("%s", compilation_log);
         return 0;
     }
-    log_debug("shader program successfully linked");
+    debug("shader program successfully linked");
     return program;
 }
 
@@ -34,17 +34,17 @@ unsigned int shaderCompileProgramFull(char* vertexPath, char* geometryPath, char
 
     if(vertexPath){
         requires(vertexShader = shaderLoadAndCompile(vertexPath, GL_VERTEX_SHADER),
-            vertexPath);
+            "%s", vertexPath);
         glAttachShader(shaderProgram, vertexShader);
     }
     if(fragmentPath){
         requires(fragmentShader = shaderLoadAndCompile(fragmentPath, GL_FRAGMENT_SHADER),
-            fragmentPath);
+            "%s", fragmentPath);
         glAttachShader(shaderProgram, fragmentShader);
     }
     if(geometryPath){
         requires(geometryShader = shaderLoadAndCompile(geometryPath, GL_GEOMETRY_SHADER),
-            geometryPath);
+            "%s", geometryPath);
         glAttachShader(shaderProgram, geometryShader);
     }
 

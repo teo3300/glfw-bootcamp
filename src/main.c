@@ -14,7 +14,7 @@ int main(){
 
     //  initializing GLFW
     if(!glfwInit()){                                                            // well... init
-        log_error("Failed to initialize GLFW");
+        error("Failed to initialize GLFW");
         return -1;
     }
     glfwRequired(4, 3, GLFW_OPENGL_CORE_PROFILE);
@@ -22,19 +22,19 @@ int main(){
     //  creating window
     window = glfwCreateWindow(800, 600, "OpenGL test", NULL, NULL);             // new window
     if (!window){                                                               // exit with error if window init failed
-        log_error("Failed to create GLFW window");
+        error("Failed to create GLFW window");
         glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);                                             // OpenGL context on current window
-    log_log("Window successfully created");
+    log("Window successfully created");
 
     //  initializing GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){                   // try loading GL functions
-        log_error("Failed to initialize GLAD");
+        error("Failed to initialize GLAD");
         return -1;
     }
-    log_log("GLAD successfully initialized");
+    log("GLAD successfully initialized");
 
     //  setting GL viewport
     glViewport(0, 0, 800, 600);                                                 // setting initial GL viewport
@@ -69,7 +69,7 @@ int main(){
 
     unsigned int shaderProgram =
         shaderCompileProgram("shaders/main.vert", "shaders/main.frag");
-    if(!shaderProgram)  log_error("Failed to compile shader program");
+    if(!shaderProgram)  error("Failed to compile shader program");
 
     int vertexColorLocation = glGetUniformLocation(shaderProgram, "outColor");  // locate uniform variables
 
@@ -98,6 +98,6 @@ int main(){
 
     glDeleteProgram(shaderProgram);
 
-    log_log("Execution ended");
+    log("Execution ended");
     return 0;
 }

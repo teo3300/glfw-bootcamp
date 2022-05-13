@@ -1,8 +1,8 @@
 target	:= main
 
 CC			:= gcc
-CFLAG		:= -O2 -Wall -Werror -g # -m64
-DEFINES		:= LOG_LEVEL=LOG_LEVEL_DEBUG
+CFLAG		:= -O2 -Wall -Werror -g -m64
+DEFINES		:= DLEVEL=LEVEL_DEBUG
 LIBRARIES	:= pthread GL glfw dl m
 PKG 		:= 
 
